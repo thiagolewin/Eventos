@@ -1,10 +1,26 @@
 import {Router} from "express"
 import EventService from '../services/event-service.js'
 import EventLocationService from '../services/eventLocation-service.js'
+
 const router = Router()
+import jwt from 'jsonwebtoken'
 const svc = new EventService()
 const svcE = new EventLocationService()
-router.get('',async (req,res)=> {
+const TokenMiddleWare = async function (req,res,next) {
+    if(req.headers.authorization) {
+        const token = req.headers.authorization.split(' ')[1];
+        try {
+            let payloadOriginal = await jwt.verify(token,"MatiPalito" )
+        } catch (error) {
+            return res.status(401).json("Unauthorized")
+        }
+        next()
+    } else {
+        return res.status(401).json("Unauthorized")
+    }
+
+}
+router.get('',TokenMiddleWare,async (req,res)=> {
     let respuesta
     const returnArray = await svc.getAllAsync(req.params)
     if(returnArray != null) {
@@ -14,7 +30,7 @@ router.get('',async (req,res)=> {
     }
     return respuesta
 })
-router.post("",async (req,res)=> {
+router.post("",TokenMiddleWare,async (req,res)=> {
     let respuesta
     let capacidad = await svcE.getAllAsyncId(req.body.id_event_location)
     if(req.body.name == "" || req.body.description == "" || req.body.price < 0 || req.body.duration_in_minutes < 0 || req.body.max_assistance > capacidad[0].max_capacity) {
@@ -30,7 +46,7 @@ router.post("",async (req,res)=> {
 
     return respuesta
 })
-router.put("",async (req,res)=> {
+router.put("",TokenMiddleWare,async (req,res)=> {
     let respuesta
     const returnArray = await svc.updateAsync(req.body)
     if(returnArray != null) {
@@ -40,7 +56,7 @@ router.put("",async (req,res)=> {
     }
     return respuesta
 })
-router.delete("/:id",async (req,res)=> {
+router.delete("/:id",TokenMiddleWare,async (req,res)=> {
     let respuesta
     const returnArray = await svc.DeleteByIdAsync(req.params.id)
     if(returnArray != null) {
