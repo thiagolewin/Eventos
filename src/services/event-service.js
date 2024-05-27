@@ -5,6 +5,11 @@ export default class EventService {
         const returnArray = await repo.getAllAsync(parametros)
         return returnArray
     }
+    GetEnrollment =  async (parametros)=> {
+        const repo = new EventRepository()
+        const returnArray = await repo.getAllEnrollmentAsync(parametros)
+        return returnArray
+    }
     createAsync = async(entity)=> {
         const repo = new EventRepository()
         const returnArray = await repo.createAsync(entity)
@@ -20,9 +25,14 @@ export default class EventService {
         const returnArray = await repo.DeleteByIdAsync(id)
         return returnArray
     }
+    DeleteByIdEnrollmentAsync = async(id)=> {
+        const repo = new EventRepository()
+        const returnArray = await repo.DeleteByIdEnrollmentAsync(id)
+        return returnArray
+    }
     createEnrrollmentAsync = async(entity)=> {
         const repo = new EventRepository()
-        const returnArray = await repo.createAsync(entity)
+        const returnArray = await repo.createEnrrollmentAsync(entity)
         return returnArray
     }
 }

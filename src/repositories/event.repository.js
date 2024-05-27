@@ -9,7 +9,23 @@ export default class ProvinceRepository {
             await client.connect()
             const sql = "Select * From public.events Where Id = $1";
             
-            const values = [parametros.name]
+            const values = [parametros]
+            const result = await client.query(sql,values)
+            await client.end()
+            returnArray = result.rows
+        } catch (error) {
+            console.log(error)
+        }
+        return returnArray
+    }
+    getAllEnrollmentAsync = async(parametros)=> {
+        let returnArray = null
+        const client = new Client(DBConfig)
+        try {
+            await client.connect()
+            const sql = "Select * From public.event_enrollments Where Id = $1";
+            
+            const values = [parametros]
             const result = await client.query(sql,values)
             await client.end()
             returnArray = result.rows
@@ -57,6 +73,20 @@ export default class ProvinceRepository {
         try {
             await client.connect()
             const sql = "DELETE FROM public.events WHERE id = " + id
+            const result = await client.query(sql)
+            await client.end()
+            returnArray = result.rows
+        } catch (error) {
+            console.log(error)
+        }
+        return returnArray
+    }
+    DeleteByIdEnrollmentAsync = async(id)=> {
+        let returnArray = null
+        const client = new Client(DBConfig)
+        try {
+            await client.connect()
+            const sql = "DELETE FROM public.event_enrollments WHERE id = " + id
             const result = await client.query(sql)
             await client.end()
             returnArray = result.rows

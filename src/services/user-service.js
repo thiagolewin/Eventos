@@ -10,4 +10,9 @@ export default class UserService {
         const returnArray = await repo.LoginAsync(entity)
         return returnArray
     }
+    GetId  = async(username)=> {
+        const repo = new UserRepository()
+        const returnArray = await repo.GetId(username)
+        return returnArray
+    }
 }
