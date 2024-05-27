@@ -7,9 +7,9 @@ export default class ProvinceRepository {
         const client = new Client(DBConfig)
         try {
             await client.connect()
-            const sql = "Select * From public.events Where name = $1 and category = $2 and startdate = $3 and tag = $4";
+            const sql = "Select * From public.events Where Id = $1";
             
-            const values = [parametros.name,parametros.category,parametros.startdate,parametros.tag]
+            const values = [parametros.name]
             const result = await client.query(sql,values)
             await client.end()
             returnArray = result.rows
@@ -33,6 +33,7 @@ export default class ProvinceRepository {
         }
         return returnArray
     }
+    
     updateAsync = async(entity)=> {
         let returnArray = null
         const client = new Client(DBConfig)
@@ -57,6 +58,21 @@ export default class ProvinceRepository {
             await client.connect()
             const sql = "DELETE FROM public.events WHERE id = " + id
             const result = await client.query(sql)
+            await client.end()
+            returnArray = result.rows
+        } catch (error) {
+            console.log(error)
+        }
+        return returnArray
+    }
+    createEnrrollmentAsync = async(entity)=> {
+        let returnArray = null
+        const client = new Client(DBConfig)
+        try {
+            await client.connect()
+            const sql = `INSERT INTO event_enrollments (id_event, id_user,description,registration_date_time,attended,observations,rating) VALUES ($1,$2,$3,$4,$5,$6,$7)`
+            const values = [entity.id_event,entity.id_user,entity.description,entity.registration_date_time,entity.attended,entity.observations,entity.rating]
+            const result = await client.query(sql,values)
             await client.end()
             returnArray = result.rows
         } catch (error) {

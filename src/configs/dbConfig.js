@@ -1,6 +1,6 @@
 const config = {
     host : "localhost",
-    database : "postgres",
+    database : "Dai-Events",
     user : "postgres",
     password : "root",
     port : 5432

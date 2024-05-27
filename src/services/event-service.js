@@ -20,4 +20,9 @@ export default class EventService {
         const returnArray = await repo.DeleteByIdAsync(id)
         return returnArray
     }
+    createEnrrollmentAsync = async(entity)=> {
+        const repo = new EventRepository()
+        const returnArray = await repo.createAsync(entity)
+        return returnArray
+    }
 }

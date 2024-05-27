@@ -4,10 +4,12 @@ const router = Router()
 const svc = new ProvinceService()
 router.get('/:id',async (req,res)=> {
     let respuesta
-    const returnArray = await svc.getAllAsync(req.params.id)
-    if(returnArray.length == 0){
-        respuesta = res.status(404).json("Array vacio")
-    }
+    try {
+        const returnArray = await svc.getAllAsync(req.params.id)
+        
+    if (returnArray[0].length === 0) {
+        respuesta = res.status(404).json("Array vacio");
+    } 
     else if(returnArray != null) {
         respuesta = res.status(200).json(returnArray)
     }
@@ -15,6 +17,9 @@ router.get('/:id',async (req,res)=> {
         respuesta = res.status(500).json("Error Interno")
     }
     return respuesta
+    } catch (error) {
+        
+    }
 })
 router.get('/:id/locations',async (req,res)=> {
     let respuesta
