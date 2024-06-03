@@ -5,6 +5,11 @@ export default class EventService {
         const returnArray = await repo.getAllAsync(parametros)
         return returnArray
     }
+    getIdAsync =  async (id)=> {
+        const repo = new EventRepository()
+        const returnArray = await repo.getIdAsync(id)
+        return returnArray
+    }
     GetEnrollment =  async (parametros)=> {
         const repo = new EventRepository()
         const returnArray = await repo.getAllEnrollmentAsync(parametros)
@@ -33,6 +38,11 @@ export default class EventService {
     createEnrrollmentAsync = async(entity)=> {
         const repo = new EventRepository()
         const returnArray = await repo.createEnrrollmentAsync(entity)
+        return returnArray
+    }
+    getEnrollment = async(query) => {
+        const repo = new EventRepository()
+        const returnArray = await repo.getEnrollment(query)
         return returnArray
     }
 }

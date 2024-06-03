@@ -21,6 +21,7 @@ const TokenMiddleWare = async function (req,res,next) {
 
 }
 router.post(":id/enrollment",TokenMiddleWare,(async (req,res)=> {
+    console.log("asd")
     const token = req.headers.authorization.split(' ')[1];
     let payloadOriginal = await jwt.verify(token,"MatiPalito" )
     const eventId = req.query.params.id
@@ -36,6 +37,8 @@ router.post(":id/enrollment",TokenMiddleWare,(async (req,res)=> {
         "observations" : "muy bueno",
         "rating" : 10
     }
+    console.log(eventMax[0].max_assistance)
+    console.log(eventAssistance.attended)
     if(eventMax[0].max_assistance <  eventAssistance.attended || svcES[0].start_date <=new Date() || svcES[0].enabled_for_enrollment == false) {
         respuesta = res.status(400).json("Bad Request")
     } else {

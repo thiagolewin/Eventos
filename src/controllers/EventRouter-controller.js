@@ -20,10 +20,60 @@ const TokenMiddleWare = async function (req,res,next) {
         return res.status(401).json("Unauthorized")
     }
 
+
 }
-router.get('',TokenMiddleWare,async (req,res)=> {
+router.get('',async (req,res)=> {
+    const {name,category,startdate,tag} = req.query
+    let querysUser = []
+    if(name != undefined) {
+        querysUser.push({
+            "data" : "name",
+            "value" : name,
+            "s" : "e"
+        })
+    } 
+    if(category != undefined) {
+        querysUser.push({
+            "data" : "name",
+            "value" : category,
+            "s" : "c"
+        })
+    } 
+    if(startdate != undefined) {
+        querysUser.push({
+            "data" : "start_date",
+            "value" : startdate,
+            "s" : "e"
+        })
+    } 
+    if(tag != undefined) {
+        querysUser.push({
+            "data" : "name",
+            "value" : tag,
+            "s" : "t"
+        })
+    } 
+    let query = "select e.*"
+    query+= " FROM events e INNER JOIN event_categories c ON e.id_event_category = c.id INNER JOIN event_tags f ON e.id = f.id_event INNER JOIN tags t ON f.id_tag = t.id WHERE "
+    querysUser.forEach((element,i) => {
+        if(i == 0) {
+            query += element.s +"." + element.data +" = "+ "'"+element.value+"'" 
+        } else {
+            query += " AND "+element.s +"." + element.data +" = "+ "'"+element.value+"'"
+        }
+    });
     let respuesta
-    const returnArray = await svc.getAllAsync(req.params)
+    const returnArray = await svc.getAllAsync(query)
+    if(returnArray != null) {
+        respuesta = res.status(200).json(returnArray)
+    } else {
+        respuesta = res.status(500).json("Error Interno")
+    }
+    return respuesta
+})
+router.get('/:id',async (req,res)=> {
+    let respuesta
+    const returnArray = await svc.getIdAsync(req.params.id)
     if(returnArray != null) {
         respuesta = res.status(200).json(returnArray)
     } else {
@@ -106,5 +156,61 @@ router.post("/:id/enrollment", TokenMiddleWare, async (req, res) => {
         }
     }
 });
+router.get("/:id/enrollment",async(req,res)=> {
+    const {id} = req.params
+    const {first_name,last_name,username,attended,rating} =  req.query 
+    let querysUser = []  
+    let queryN = []
+    if(first_name != undefined) {
+        querysUser.push({
+            "data" : "first_name",
+            "value" : first_name,
+            "s" : "u"
+        })
+    } 
+    if(last_name != undefined) {
+        querysUser.push({
+            "data" : "last_name",
+            "value" : last_name,
+            "s" : "u"
+        })
+    }
+    if(username != undefined) {
+        querysUser.push({
+            "data" : "username",
+            "value" : username,
+            "s" : "u"
+        })
+    }
+    if(attended != undefined) {
+        querysUser.push({
+            "data" : "attended",
+            "value" : attended,
+            "s" : "e"
+        })
+    }
+    if(rating != undefined) {
+        querysUser.push({
+            "data" : "rating",
+            "value" : rating,
+            "s" : "e"
+        })
+    }
+    let query = "select *"
+    query+= " FROM event_enrollments e INNER JOIN users u ON e.id_user = u.id WHERE e.id_event = " + id +" AND "
+    querysUser.forEach((element,i) => {
+        if(i == 0) {
+            query += element.s +"." + element.data +" = "+ "'"+element.value+"'" 
+        } else {
+            query += " AND "+element.s +"." + element.data +" = "+ "'"+element.value+"'"
+        }
+    });
+    const returnArray = await svc.getEnrollment(query);
+        if (returnArray != null) {
+            res.status(200).json(returnArray); 
+        } else {
+            res.status(500).json("Error Interno"); 
+        }
+})
 
 export default router

@@ -2,14 +2,29 @@ import DBConfig from './../configs/dbConfig.js'
 import pkg from 'pg'
 const {Client, Pool} = pkg
 export default class ProvinceRepository {
-    getAllAsync = async(parametros)=> {
+    getAllAsync = async(query)=> {
+        let returnArray = null
+        const client = new Client(DBConfig)
+        try {
+            await client.connect()
+            const sql = query;
+            
+            const result = await client.query(sql)
+            await client.end()
+            returnArray = result.rows
+        } catch (error) {
+            console.log(error)
+        }
+        return returnArray
+    }
+    getIdAsync = async(id)=> {
         let returnArray = null
         const client = new Client(DBConfig)
         try {
             await client.connect()
             const sql = "Select * From public.events Where Id = $1";
             
-            const values = [parametros]
+            const values = [id]
             const result = await client.query(sql,values)
             await client.end()
             returnArray = result.rows
@@ -103,6 +118,21 @@ export default class ProvinceRepository {
             const sql = `INSERT INTO event_enrollments (id_event, id_user,description,registration_date_time,attended,observations,rating) VALUES ($1,$2,$3,$4,$5,$6,$7)`
             const values = [entity.id_event,entity.id_user,entity.description,entity.registration_date_time,entity.attended,entity.observations,entity.rating]
             const result = await client.query(sql,values)
+            await client.end()
+            returnArray = result.rows
+        } catch (error) {
+            console.log(error)
+        }
+        return returnArray
+    }
+    getEnrollment = async(query) => {
+        let returnArray = null
+        const client = new Client(DBConfig)
+        try {
+            await client.connect()
+            const sql = query
+            console.log(query)
+            const result = await client.query(sql)
             await client.end()
             returnArray = result.rows
         } catch (error) {
