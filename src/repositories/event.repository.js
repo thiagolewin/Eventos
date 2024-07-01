@@ -8,7 +8,7 @@ export default class ProvinceRepository {
         try {
             await client.connect()
             const sql = query;
-            
+            console.log(sql)
             const result = await client.query(sql)
             await client.end()
             returnArray = result.rows

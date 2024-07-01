@@ -54,10 +54,10 @@ router.get('',async (req,res)=> {
         })
     } 
     let query = "select e.*"
-    query+= " FROM events e INNER JOIN event_categories c ON e.id_event_category = c.id INNER JOIN event_tags f ON e.id = f.id_event INNER JOIN tags t ON f.id_tag = t.id WHERE "
+    query+= " FROM events e INNER JOIN event_categories c ON e.id_event_category = c.id INNER JOIN event_tags f ON e.id = f.id_event INNER JOIN tags t ON f.id_tag = t.id WHERE 1=1"
     querysUser.forEach((element,i) => {
         if(i == 0) {
-            query += element.s +"." + element.data +" = "+ "'"+element.value+"'" 
+            query += " AND "+element.s +"." + element.data +" = "+ "'"+element.value+"'" 
         } else {
             query += " AND "+element.s +"." + element.data +" = "+ "'"+element.value+"'"
         }
