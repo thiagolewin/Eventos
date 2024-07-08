@@ -21,7 +21,7 @@ export default class ProvinceRepository {
         const client = new Client(DBConfig)
         try {
             await client.connect()
-            const sql = "Select * From public.event_locations Where id = $1";
+            const sql = "Select * From public.events Where id_event_location = $1";
             
             const values = [parametros]
             const result = await client.query(sql,values)

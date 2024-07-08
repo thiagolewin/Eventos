@@ -7,21 +7,28 @@ import jwt from 'jsonwebtoken'
 const svcE = new EventLocationService()
 const svc = new EventService()
 const svu = new UserService()
-const TokenMiddleWare = async function (req,res,next) {
-    if(req.headers.authorization) {
+const TokenMiddleWare = async function (req, res, next) {
+    
+    // Verificar si existe el encabezado de autorización
+    if (req.headers.authorization) {
+        // Extraer el token del encabezado de autorización
         const token = req.headers.authorization.split(' ')[1];
+        
         try {
-            let payloadOriginal = await jwt.verify(token,"MatiPalito" )
+            // Verificar y decodificar el token JWT usando la clave "MatiPalito"
+            let payloadOriginal = await jwt.verify(token, "MatiPalito");
+            // Si la verificación es exitosa, continuar con la siguiente función de middleware
+            next();
         } catch (error) {
-            return res.status(401).json("Unauthorized")
+            // Si hay un error al verificar el token, devolver una respuesta de error 401 Unauthorized
+            return res.status(401).json("Unauthorized");
         }
-        next()
     } else {
-        return res.status(401).json("Unauthorized")
+        // Si no hay encabezado de autorización presente, devolver una respuesta de error 401 Unauthorized
+        return res.status(401).json("Unauthorized");
     }
+};
 
-
-}
 router.get('',async (req,res)=> {
     const {name,category,startdate,tag} = req.query
     let querysUser = []
@@ -74,9 +81,13 @@ router.get('',async (req,res)=> {
 router.get('/:id',async (req,res)=> {
     let respuesta
     const returnArray = await svc.getIdAsync(req.params.id)
-    if(returnArray != null) {
+    if(returnArray.length == 0){
+        respuesta = res.status(404).json("Array vacio")
+    }
+    else if(returnArray != null) {
         respuesta = res.status(200).json(returnArray)
-    } else {
+    }
+    else {
         respuesta = res.status(500).json("Error Interno")
     }
     return respuesta
@@ -120,6 +131,7 @@ router.delete("/:id",TokenMiddleWare,async (req,res)=> {
 })
 router.delete("/:id/enrollment",TokenMiddleWare,async (req,res)=> {
     let respuesta
+    let eventId = req.params.id
     const returnArray = await svc.DeleteByIdEnrollmentAsync(req.params.id)
     const event = await svc.getAllAsync(eventId);
     if(returnArray != null || new Date(event[0].start_date) <= new Date()) {
@@ -133,9 +145,12 @@ router.post("/:id/enrollment", TokenMiddleWare, async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     let payloadOriginal = await jwt.verify(token, "MatiPalito");
     const eventId = req.params.id; 
-    const event = await svc.getAllAsync(eventId);
+    const event = await svc.getIdAsync(eventId);
     const idUser = await svu.GetId(payloadOriginal.username)
     const svcES = await svc.GetEnrollment(eventId);
+    if(event.length == 0 || !   event) {
+        res.status(400).json("Vacio"); 
+    }
     const datos = {
         "id_event": eventId,
         "id_user": idUser[0].id,
@@ -197,20 +212,24 @@ router.get("/:id/enrollment",async(req,res)=> {
         })
     }
     let query = "select *"
-    query+= " FROM event_enrollments e INNER JOIN users u ON e.id_user = u.id WHERE e.id_event = " + id +" AND "
+    query+= " FROM event_enrollments e INNER JOIN users u ON e.id_user = u.id WHERE e.id_event = " + id
     querysUser.forEach((element,i) => {
         if(i == 0) {
-            query += element.s +"." + element.data +" = "+ "'"+element.value+"'" 
+            query += "AND " +element.s +"." + element.data +" = "+ "'"+element.value+"'" 
         } else {
             query += " AND "+element.s +"." + element.data +" = "+ "'"+element.value+"'"
         }
     });
     const returnArray = await svc.getEnrollment(query);
-        if (returnArray != null) {
-            res.status(200).json(returnArray); 
-        } else {
-            res.status(500).json("Error Interno"); 
-        }
+    if(returnArray.length == 0){
+        respuesta = res.status(404).json("Array vacio")
+    }
+    else if(returnArray != null) {
+        respuesta = res.status(200).json(returnArray)
+    }
+    else {
+        respuesta = res.status(500).json("Error Interno")
+    }
 })
 
 export default router

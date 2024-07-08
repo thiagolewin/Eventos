@@ -5,12 +5,12 @@ const router = Router()
 const svc = new UserService()
 router.post("/register",async (req,res)=> {
     let respuesta
-    if(req.body.first_name == "" || req.body.last_name == "" || req.body.username.includes("@") || req.body.password.length < 3) {
+    if(req.body.first_name == "" || req.body.last_name == "" || !req.body.username.includes("@") || req.body.password.length < 3) {
         respuesta = res.status(400).json("Bad request")
     } else {
         const returnArray = await svc.createAsync(req.body)
         if(returnArray != null) {
-            respuesta = res.status(200).json(returnArray)
+            respuesta = res.status(201).json(returnArray)
         } else {
             respuesta = res.status(500).json("Error Interno")
         }
@@ -21,7 +21,7 @@ router.post("/register",async (req,res)=> {
 router.post("/login",async (req,res)=> {
     let respuesta
         const returnArray = await svc.LoginAsync(req.body)
-        if(returnArray != null) {
+        if(returnArray.length != 0) {
             const secretKey = "MatiPalito"
             const options = {
                 expiresIn : '1h',
@@ -30,7 +30,7 @@ router.post("/login",async (req,res)=> {
             const token = jwt.sign(returnArray[0],secretKey,options)
             respuesta = res.status(200).json(token)
         } else {
-            respuesta = res.status(500).json("Error Interno")
+            respuesta = res.status(400).json("Login Incorrecto")
         }
         return respuesta
     

@@ -2,7 +2,21 @@ import DBConfig from './../configs/dbConfig.js'
 import pkg from 'pg'
 const {Client, Pool} = pkg
 export default class ProvinceRepository {
-    getAllAsync = async(parametros)=> {
+    getAllAsync = async()=> {
+        let returnArray = null
+        const client = new Client(DBConfig)
+        try {
+            await client.connect()
+            const sql = "Select * From public.provinces";
+            const result = await client.query(sql)
+            await client.end()
+            returnArray = result.rows
+        } catch (error) {
+            console.log(error)
+        }
+        return returnArray
+    }
+    getAllAsyncId = async(parametros)=> {
         let returnArray = null
         const client = new Client(DBConfig)
         try {
@@ -22,8 +36,7 @@ export default class ProvinceRepository {
         const client = new Client(DBConfig)
         try {
             await client.connect()
-            const sql = "Select * From public.locations Where id_province = $1";
-            
+            const sql = "SELECT * FROM event_locations e INNER JOIN locations l ON l.id = e.id_location INNER JOIN provinces p ON p.id = l.id_province where p.id = $1"            
             const values = [parametros]
             const result = await client.query(sql,values)
             await client.end()

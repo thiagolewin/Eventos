@@ -2,12 +2,31 @@ import {Router} from "express"
 import ProvinceService from '../services/province-service.js'
 const router = Router()
 const svc = new ProvinceService()
+router.get('',async (req,res)=> {
+    let respuesta
+    try {
+        const returnArray = await svc.getAllAsync()
+        
+    if (returnArray[0].length === 0) {
+        respuesta = res.status(404).json("Array vacio");
+    } 
+    else if(returnArray != null) {
+        respuesta = res.status(200).json(returnArray)
+    }
+    else {
+        respuesta = res.status(500).json("Error Interno")
+    }
+    return respuesta
+    } catch (error) {
+        
+    }
+})
 router.get('/:id',async (req,res)=> {
     let respuesta
     try {
-        const returnArray = await svc.getAllAsync(req.params.id)
+        const returnArray = await svc.getAllAsyncId(req.params.id)
         
-    if (returnArray[0].length === 0) {
+    if (returnArray.length === 0) {
         respuesta = res.status(404).json("Array vacio");
     } 
     else if(returnArray != null) {
