@@ -38,7 +38,7 @@ export default class ProvinceRepository {
         const client = new Client(DBConfig)
         try {
             await client.connect()
-            const sql = "Select * From public.event_enrollments Where Id = $1";
+            const sql = "SELECT ee.*, u.username AS username FROM public.event_enrollments ee INNER JOIN public.users u ON ee.id_user = u.id WHERE ee.id_event = $1";
             
             const values = [parametros]
             const result = await client.query(sql,values)

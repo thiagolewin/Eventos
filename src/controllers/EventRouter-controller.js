@@ -141,6 +141,22 @@ router.delete("/:id/enrollment",TokenMiddleWare,async (req,res)=> {
     }
     return respuesta
 })
+router.get("/enrollments/:id", async (req,res)=> {
+    let respuesta
+    const eventId = req.params.id; 
+    console.log(eventId)
+    const returnArray = await svc.GetEnrollment(eventId);
+    console.log(returnArray)
+    if(returnArray.length == 0){
+        respuesta = res.status(404).json("Array vacio")
+    }
+    else if(returnArray != null) {
+        respuesta = res.status(200).json(returnArray)
+    }
+    else {
+        respuesta = res.status(500).json("Error Interno")
+    }
+})
 router.post("/:id/enrollment", TokenMiddleWare, async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     let payloadOriginal = await jwt.verify(token, "MatiPalito");
