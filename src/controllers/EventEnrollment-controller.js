@@ -30,15 +30,13 @@ router.post(":id/enrollment",TokenMiddleWare,(async (req,res)=> {
     const svcES = await svc.getAllAsync(eventId)
     const datos = {
         "id_event" : eventId,
-        "id_user" :  1,
+        "id_user" :  req.params.id,
         "description" : "muy bueno",
         "registration_date_time" : new Date(),
-        "attended" : true,
+        "attended" : false,
         "observations" : "muy bueno",
         "rating" : 10
     }
-    console.log(eventMax[0].max_assistance)
-    console.log(eventAssistance.attended)
     if(eventMax.max_assistance <  eventAssistance.attended || svcES[0].start_date <=new Date() || svcES[0].enabled_for_enrollment == false) {
         respuesta = res.status(400).json("Bad Request")
     } else {

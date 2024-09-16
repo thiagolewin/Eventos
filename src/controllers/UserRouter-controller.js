@@ -5,7 +5,7 @@ const router = Router()
 const svc = new UserService()
 router.post("/register",async (req,res)=> {
     let respuesta
-    if(req.body.first_name == "" || req.body.last_name == "" || !req.body.username.includes("@") || req.body.password.length < 3) {
+    if(req.body.first_name == "" || req.body.last_name == "" || req.body.password.length < 3) {
         respuesta = res.status(400).json("Bad request")
     } else {
         const returnArray = await svc.createAsync(req.body)
@@ -19,6 +19,7 @@ router.post("/register",async (req,res)=> {
 
 })
 router.post("/login",async (req,res)=> {
+    console.log("a")
     let respuesta
         const returnArray = await svc.LoginAsync(req.body)
         if(returnArray.length != 0) {
@@ -28,7 +29,7 @@ router.post("/login",async (req,res)=> {
                 issuer : 'eventos'
             }
             const token = jwt.sign(returnArray[0],secretKey,options)
-            respuesta = res.status(200).json(token)
+            respuesta = res.status(200).json({...returnArray[0],token})
         } else {
             respuesta = res.status(400).json("Login Incorrecto")
         }

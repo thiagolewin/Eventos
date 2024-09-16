@@ -17,7 +17,7 @@ const TokenMiddleWare = async function (req, res, next) {
         try {
             // Verificar y decodificar el token JWT usando la clave "MatiPalito"
             let payloadOriginal = await jwt.verify(token, "MatiPalito");
-            // Si la verificación es exitosa, continuar con la siguiente función de middleware
+            req.user = payloadOriginal
             next();
         } catch (error) {
             // Si hay un error al verificar el token, devolver una respuesta de error 401 Unauthorized
@@ -132,9 +132,8 @@ router.delete("/:id",TokenMiddleWare,async (req,res)=> {
 router.delete("/:id/enrollment",TokenMiddleWare,async (req,res)=> {
     let respuesta
     let eventId = req.params.id
-    const returnArray = await svc.DeleteByIdEnrollmentAsync(req.params.id)
-    const event = await svc.getAllAsync(eventId);
-    if(returnArray != null || new Date(event[0].start_date) <= new Date()) {
+    const returnArray = await svc.DeleteByIdEnrollmentAsync(eventId,req.user.id)
+    if(returnArray != null) {
         respuesta = res.status(200).json(returnArray)
     } else {
         respuesta = res.status(500).json("Error Interno")
@@ -144,9 +143,7 @@ router.delete("/:id/enrollment",TokenMiddleWare,async (req,res)=> {
 router.get("/enrollments/:id", async (req,res)=> {
     let respuesta
     const eventId = req.params.id; 
-    console.log(eventId)
     const returnArray = await svc.GetEnrollment(eventId);
-    console.log(returnArray)
     if(returnArray.length == 0){
         respuesta = res.status(404).json("Array vacio")
     }
@@ -188,6 +185,7 @@ router.post("/:id/enrollment", TokenMiddleWare, async (req, res) => {
     }
 });
 router.get("/:id/enrollment",async(req,res)=> {
+    let respuesta
     const {id} = req.params
     const {first_name,last_name,username,attended,rating} =  req.query 
     let querysUser = []  

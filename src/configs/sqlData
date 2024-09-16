@@ -736,6 +736,7 @@ ALTER TABLE ONLY public.tags
 -- Name: users PK_Users; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
+
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT "PK_Users" PRIMARY KEY (id);
 

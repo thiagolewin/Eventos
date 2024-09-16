@@ -96,12 +96,12 @@ export default class ProvinceRepository {
         }
         return returnArray
     }
-    DeleteByIdEnrollmentAsync = async(id)=> {
+    DeleteByIdEnrollmentAsync = async(id,userId)=> {
         let returnArray = null
         const client = new Client(DBConfig)
         try {
             await client.connect()
-            const sql = "DELETE FROM public.event_enrollments WHERE id = " + id
+            const sql = "DELETE FROM public.event_enrollments WHERE id_event = " + id + " AND id_user = "+ userId
             const result = await client.query(sql)
             await client.end()
             returnArray = result.rows

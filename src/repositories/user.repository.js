@@ -5,6 +5,7 @@ export default class ProvinceRepository {
     createAsync = async(entity)=> {
         let returnArray = null
         const client = new Client(DBConfig)
+        console.log(entity)
         try {
             await client.connect()
             const sql = `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)`
